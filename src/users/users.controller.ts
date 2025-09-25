@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './user.dto';
 import type { IUser } from './user.model';
 import { ConfigService } from '@nestjs/config';
-import { Env } from 'src/env.model';
+import { Env } from 'src/core/env.model';
 
 @Controller('users')
 export class UsersController {
