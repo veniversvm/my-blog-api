@@ -6,6 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_CONFIG, AppConfigType } from '../config.loader';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { ProfileEntity } from 'src/users/entities/profile.entity';
+import { PostEntity } from 'src/posts/entities/post.entity';
+import { CategoryEntity } from 'src/posts/entities/category.entity';
 
 @Module({
   imports: [
@@ -20,7 +22,7 @@ import { ProfileEntity } from 'src/users/entities/profile.entity';
         }
         return {
           database: name,
-          entities: [UserEntity, ProfileEntity],
+          entities: [UserEntity, ProfileEntity, PostEntity, CategoryEntity],
           host,
           password,
           port,
