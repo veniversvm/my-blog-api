@@ -4,6 +4,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config'; // 1. Import ConfigModule
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_CONFIG, AppConfigType } from '../config.loader';
+import { UserEntity } from 'src/users/entities/user.entity';
+import { ProfileEntity } from 'src/users/entities/profile.entity';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { APP_CONFIG, AppConfigType } from '../config.loader';
         }
         return {
           database: name,
-          entities: [],
+          entities: [UserEntity, ProfileEntity],
           host,
           password,
           port,
