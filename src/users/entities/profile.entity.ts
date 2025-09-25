@@ -1,6 +1,9 @@
 import { Column, CreateDateColumn, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+
+import { Entity } from 'typeorm';
 import { UserEntity } from './user.entity';
 
+@Entity()
 export class ProfileEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
@@ -9,16 +12,16 @@ export class ProfileEntity {
   name: string;
 
   @Column({ type: 'varchar', length: 255, name: 'last_name' })
-  LastName: string;
+  lastName: string;
 
   @Column('int')
   age: number;
 
-  @Column({ type: 'text', length: 255, name: 'avatar_url' })
+  @Column({ type: 'text', name: 'avatar_url', nullable: true })
   avatarUrl: string;
 
-  @OneToOne(() => UserEntity)
-  @JoinColumn()
+  @OneToOne(() => UserEntity, (user) => user.profile, { nullable: false })
+  @JoinColumn({ name: 'user_id' }) // <-- ¡Esto es crucial! Le dice a TypeORM que esta tabla tiene la clave foránea.
   user: UserEntity;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', name: 'created_at' })

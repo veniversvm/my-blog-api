@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, HttpStatus, ParseIntPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, UpdateUserDto } from './user.dto';
-import type { IUser } from './user.model';
+import { CreateUserDto, UpdateUserDto } from './dtos/user.dto';
 import { ConfigService } from '@nestjs/config';
 import { Env } from 'src/core/env.model';
+import { UserEntity } from './entities/user.entity';
+import { DeleteResult } from 'typeorm';
+import { ProfileEntity } from './entities/profile.entity';
 
 @Controller('users')
 export class UsersController {
@@ -14,30 +16,35 @@ export class UsersController {
   ) {}
 
   @Get('/')
-  getAllUsers(): IUser[] {
+  async getAllUsers(): Promise<UserEntity[]> {
     const myVar: string | null = this.configServices.get('MYVAR', { infer: true }) ?? null;
     console.log(myVar);
-    return this.usersService.getAllUsers();
+    return await this.usersService.getAllUsers();
   }
 
   @Get('/:id')
-  getUserById(@Param('id') id: string): IUser {
+  async getUserById(@Param('id', ParseIntPipe) id: number): Promise<UserEntity> {
     return this.usersService.findUserById(id);
   }
 
   @Post('/')
-  createUser(@Body() createUserDto: CreateUserDto): IUser {
-    return this.usersService.createUser(createUserDto);
+  async createUser(@Body() createUserDto: CreateUserDto): Promise<UserEntity> {
+    return await this.usersService.createUser(createUserDto);
   }
 
   @Put('/:id')
-  updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): IUser {
-    return this.usersService.updateUser(id, updateUserDto);
+  async updateUser(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto): Promise<UserEntity> {
+    return await this.usersService.updateUser(id, updateUserDto);
   }
 
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT) // Para que devuelva 204 en éxito
-  deleteUser(@Param('id') id: string): void {
-    return this.usersService.deleteUser(id);
+  async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<DeleteResult> {
+    return await this.usersService.deleteUser(id);
+  }
+
+  @Get('/profile/:id')
+  async getUserProfile(@Param('id', ParseIntPipe) id: number): Promise<ProfileEntity> {
+    return this.usersService.findUserProfile(id);
   }
 }
