@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { DatabaseModule } from './core/database/database.module'; // Adjust path if needed
 import { UsersModule } from './users/users.module';
 import { configOptions } from './core/config.options';
+import { PostsModule } from './posts/posts.module';
 
 // 1. Import your custom config options
 
@@ -17,6 +18,7 @@ import { configOptions } from './core/config.options';
     ConfigModule.forRoot(configOptions),
     UsersModule,
     DatabaseModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

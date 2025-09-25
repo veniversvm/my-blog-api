@@ -1,3 +1,5 @@
+// src/users/users.module.ts (CORREGIDO)
+
 import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
@@ -9,5 +11,9 @@ import { ProfileEntity } from './entities/profile.entity';
   imports: [TypeOrmModule.forFeature([UserEntity, ProfileEntity])],
   controllers: [UsersController],
   providers: [UsersService],
+  // --- AÑADE ESTA LÍNEA ---
+  // Esto hace que UsersService esté disponible para cualquier otro módulo
+  // que importe UsersModule.
+  exports: [UsersService],
 })
 export class UsersModule {}
