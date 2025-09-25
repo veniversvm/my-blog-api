@@ -19,4 +19,6 @@ export class CreateProfileDto {
   avatarUrl: string;
 }
 
-export class UpdateProfileDto extends PartialType(CreateProfileDto) {}
+export class UpdateProfileDto extends PartialType(CreateProfileDto) {
+  id?: number;
+}

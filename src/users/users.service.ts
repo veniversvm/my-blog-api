@@ -34,6 +34,9 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
+  ///////////////
+  ///////////////
+
   async findUserById(id: number): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) {
@@ -42,11 +45,17 @@ export class UsersService {
     return user;
   }
 
+  ///////////////
+  ///////////////
+
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
     const newUser = await this.userRepository.save(createUserDto);
     // await this.profileRepository.save(createUserDto.profile);
     return newUser;
   }
+
+  ///////////////
+  ///////////////
 
   async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<UserEntity> {
     // 1. Cargamos la entidad existente CON sus relaciones para obtener el ID del perfil.
@@ -63,8 +72,7 @@ export class UsersService {
     //    Esto le dice a TypeORM que debe ACTUALIZAR el perfil en lugar de crear uno nuevo.
     if (updateUserDto.profile && userToUpdate.profile) {
       // TypeScript puede quejarse aquí si UpdateProfileDto no tiene 'id'.
-      // Usamos 'any' como un atajo seguro en este contexto.
-      (updateUserDto.profile as any).id = userToUpdate.profile.id;
+      updateUserDto.profile.id = userToUpdate.profile.id;
     }
 
     // 3. Ahora usamos 'preload' para fusionar de forma segura los cambios del DTO
@@ -83,6 +91,9 @@ export class UsersService {
     //    tanto en el usuario como en el perfil.
     return this.userRepository.save(mergedUser);
   }
+
+  ///////////////
+  ///////////////
 
   async deleteUser(id: number): Promise<DeleteResult> {
     const user = await this.findUserById(id);
