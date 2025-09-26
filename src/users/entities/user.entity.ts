@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { ProfileEntity } from './profile.entity';
-import { PostEntity } from 'src/posts/entities/post.entity';
-import { CategoryEntity } from 'src/posts/entities/category.entity';
+import { PostEntity } from '../../posts/entities/post.entity';
+import { CategoryEntity } from '../../posts/entities/category.entity';
 
 @Entity()
 export class UserEntity {

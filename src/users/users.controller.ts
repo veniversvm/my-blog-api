@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, HttpStatus, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode, HttpStatus, ParseIntPipe, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './dtos/user.dto';
 import { ConfigService } from '@nestjs/config';
 import { Env } from 'src/core/env.model';
 import { UserEntity } from './entities/user.entity';
-import { DeleteResult } from 'typeorm';
 import { ProfileEntity } from './entities/profile.entity';
+import { PaginationResult } from 'src/common/interfaces/pagination-result.interface';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 
 @Controller('users')
 export class UsersController {
@@ -16,12 +17,9 @@ export class UsersController {
   ) {}
 
   @Get('/')
-  async getAllUsers(): Promise<UserEntity[]> {
-    const myVar: string | null = this.configServices.get('MYVAR', { infer: true }) ?? null;
-    console.log(myVar);
-    return await this.usersService.getAllUsers();
+  async getAllUsers(@Query() paginationQuery: PaginationQueryDto): Promise<PaginationResult<UserEntity>> {
+    return this.usersService.getAllUsers(paginationQuery);
   }
-
   @Get('/:id')
   async getUserById(@Param('id', ParseIntPipe) id: number): Promise<UserEntity> {
     return this.usersService.findUserById(id);
@@ -39,8 +37,8 @@ export class UsersController {
 
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT) // Para que devuelva 204 en éxito
-  async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<DeleteResult> {
-    return await this.usersService.deleteUser(id);
+  async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    await this.usersService.deleteUser(id);
   }
 
   @Get('/profile/:id')

@@ -8,6 +8,9 @@ import { UpdatePostDto } from '../dto/update-post.dto';
 import { PostEntity } from '../entities/post.entity';
 import { UserEntity } from '../../users/entities/user.entity';
 import { CategoryEntity } from '../entities/category.entity';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginationResult } from 'src/common/interfaces/pagination-result.interface';
+import { PostListItemDto } from '../dto/post-list-item.dto';
 
 @Injectable()
 export class PostsService {
@@ -19,6 +22,18 @@ export class PostsService {
     @InjectRepository(CategoryEntity) // <-- ¡ASEGÚRATE DE INYECTARLO!
     private readonly categoryRepository: Repository<CategoryEntity>,
   ) {}
+
+  ///////////////
+  ///////////////
+  ///////////////
+  //  METHODS  //
+  ///////////////
+  ///////////////
+  ///////////////
+
+  ///////////////
+  //   POSTS   //
+  ///////////////
 
   /**
    * Crea un nuevo post. Requiere el ID del autor.
@@ -44,7 +59,6 @@ export class PostsService {
         throw new BadRequestException('Una o más de las categorías proporcionadas no existen.');
       }
     }
-
     // 4. Creamos la instancia del post con sus datos y el autor.
     const newPost = this.postRepository.create({
       ...postData,
@@ -56,14 +70,62 @@ export class PostsService {
     return this.postRepository.save(newPost);
   }
 
+  ///////////////
+  ///////////////
+
   /**
-   * Busca todo.
+   * Devuelve una lista paginada de posts.
    */
-  async findAll(): Promise<PostEntity[]> {
-    return this.postRepository.find({
-      relations: ['author', 'categories'], // Carga también las categorías
-    });
+  async findAll(paginationQuery: PaginationQueryDto): Promise<PaginationResult<PostListItemDto>> {
+    // Cambiamos el tipo de retorno a 'any' por ahora
+    const { limit, page, authorId, categoryId } = paginationQuery;
+    const skip = (page - 1) * limit;
+
+    // 1. Empezamos a construir la consulta con el QueryBuilder
+    const queryBuilder = this.postRepository.createQueryBuilder('post');
+
+    // 2. Hacemos los JOINs necesarios para poder filtrar y seleccionar datos
+    // Hacemos un JOIN con 'author' y luego con el 'profile' del autor para obtener el nombre
+    queryBuilder.innerJoin('post.author', 'author');
+    queryBuilder.innerJoin('author.profile', 'profile');
+    // Hacemos un JOIN con las categorías para poder filtrar
+    queryBuilder.innerJoin('post.categories', 'category');
+
+    // 3. Aplicamos los filtros dinámicamente si se proporcionan
+    if (authorId) {
+      queryBuilder.andWhere('author.id = :authorId', { authorId });
+    }
+
+    if (categoryId) {
+      // Filtramos los posts que tengan una categoría con el ID proporcionado
+      queryBuilder.andWhere('category.id = :categoryId', { categoryId });
+    }
+
+    // 4. Seleccionamos los campos específicos que queremos devolver
+    queryBuilder.select([
+      'post.id as id',
+      'post.title as title',
+      'post.description as description',
+      'post.createdAt as createdAt',
+      `CONCAT(profile.name, ' ', profile.lastName) as "authorName"`, // <-- ¡Carga selectiva!
+    ]);
+
+    // 5. Aplicamos la paginación y el orden
+    queryBuilder.skip(skip).take(limit).orderBy('post.createdAt', 'DESC');
+
+    // 6. Ejecutamos la consulta para obtener los resultados y el conteo total
+    const totalItems = await queryBuilder.getCount();
+    const posts = await queryBuilder.getRawMany<PostListItemDto>(); // .getRawMany() devuelve un JSON plano
+
+    // 7. Construimos la respuesta paginada
+    const totalPages = Math.ceil(totalItems / limit);
+    const meta = { totalItems, itemsPerPage: limit, totalPages, currentPage: page };
+
+    return { data: posts, meta };
   }
+
+  ///////////////
+  ///////////////
 
   /**
    * Busca un post por su ID.
@@ -79,6 +141,9 @@ export class PostsService {
     }
     return post;
   }
+
+  ///////////////
+  ///////////////
 
   /**
    * Actualiza un post usando el patrón 'preload'.
@@ -109,6 +174,9 @@ export class PostsService {
 
     return this.postRepository.save(post);
   }
+
+  ///////////////
+  ///////////////
 
   /**
    * Elimina un post por su ID.

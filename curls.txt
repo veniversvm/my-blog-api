@@ -1,0 +1,180 @@
+👤 Modelo de Usuarios (/users)
+--------------------------
+--------------------------
+### POST
+curl -X POST http://localhost:3030/users \
+-H "Content-Type: application/json" \
+-d '{
+  "username": "testuser2",
+  "email": "test.user@example.com",
+  "password": "Password123!",
+  "profile": {
+    "name": "Test",
+    "lastName": "User",
+    "age": 28
+  }
+}'
+
+curl -X POST http://localhost:3030/users \
+-H "Content-Type: application/json" \
+-d '{
+  "username": "testuser2",
+  "email": "test.user2@example.com",
+  "password": "Password123!",
+  "profile": {
+    "name": "Test",
+    "lastName": "User",
+    "age": 28
+  }
+}'
+
+curl -X POST http://localhost:3030/users \
+-H "Content-Type: application/json" \
+-d '{
+  "username": "jane.doe",
+  "email": "jane.doe@example.com",
+  "password": "SecurePassword123!",
+  "profile": {
+    "name": "Jane",
+    "lastName": "Doe",
+    "age": 30
+  }
+}'
+
+### GET /users?page=1&limit=5
+curl -X GET "http://localhost:3030/users?page=1&limit=5"
+
+curl -X GET http://localhost:3030/users/1
+
+### PUT
+
+curl -X PUT http://localhost:3030/users/1 \
+-H "Content-Type: application/json" \
+-d '{
+  "username": "testuser1_updated",
+  "email": "updated.user1@example.com",
+  "profile": {
+    "lastName": "UserUpdated",
+    "age": 29
+  }
+}'
+
+curl -X PUT http://localhost:3030/users/1 \
+-H "Content-Type: application/json" \
+-d '{
+  "username": "jane.doe.updated",
+  "profile": {
+    "age": 31
+  }
+}'
+
+
+curl -X DELETE http://localhost:3030/users/2
+
+--------------------------
+--------------------------
+🗂️ Endpoints de Categorías (/categories)
+
+# POST /categories
+curl -X POST http://localhost:3030/categories \
+-H "Content-Type: application/json" \
+-d '{
+  "name": "NestJS",
+  "createdByUserId": 1
+}'
+
+curl -X POST http://localhost:3030/categories \
+-H "Content-Type: application/json" \
+-d '{
+  "name": "TyCry",
+  "createdByUserId": 2
+}'
+
+curl -X POST http://localhost:3030/categories \
+-H "Content-Type: application/json" \
+-d '{
+  "name": "PROHIBIDO",
+  "createdByUserId": 3
+}'
+
+
+
+# GET /categories
+curl -X GET http://localhost:3030/categories
+
+# GET /categories/1
+curl -X GET http://localhost:3030/categories/1
+
+# PATCH /categories/1
+curl -X PATCH http://localhost:3030/categories/1 \
+-H "Content-Type: application/json" \
+-d '{
+  "name": "Node.js Frameworks"
+}'
+
+# DELETE /categories/1
+curl -X DELETE http://localhost:3030/categories/1
+
+--------------------------
+--------------------------
+📝 Modelo de Posts (/posts)
+
+
+curl -X GET http://localhost:3030/posts
+
+# POST /posts
+curl -X POST http://localhost:3030/posts \
+-H "Content-Type: application/json" \
+-d '{
+  "title": "Introducción a TypeORM",
+  "description": "Cómo usar TypeORM con NestJS para gestionar tu base de datos.",
+  "content": "Contenido detallado del post...",
+  "isDraft": false,
+  "authorId": 1,
+  "categories": [1, 2]
+}'
+
+curl -X POST http://localhost:3030/posts \
+-H "Content-Type: application/json" \
+-d '{
+  "title": "Tycry",
+  "description": "Delicuente regenerado.",
+  "content": "Contenido detallado del post...",
+  "isDraft": false,
+  "authorId": 1,
+  "categories": [1, 2]
+}'
+
+curl -X POST http://localhost:3030/posts \
+-H "Content-Type: application/json" \
+-d '{
+  "title": "PROHIBIDO!",
+  "description": "Yo dije que eso esta PROHIBIDO",
+  "content": "vaya pa la siestica...",
+  "isDraft": false,
+  "authorId": 2,
+  "categories": [3]
+}'
+
+# GET /posts?page=1&limit=10
+curl -X GET "http://localhost:3030/posts?page=1&limit=10"
+
+# GET /posts?authorId=1
+curl -X GET "http://localhost:3030/posts?authorId=1"
+
+
+# PATCH /posts/1
+curl -X PATCH http://localhost:3030/posts/1 \
+-H "Content-Type: application/json" \
+-d '{
+  "title": "Guía Avanzada de TypeORM",
+  "isDraft": true,
+  "categories": [2]
+}'
+
+# DELETE /posts/1
+curl -X DELETE http://localhost:3030/posts/1
+
+
+--------------------------
+--------------------------

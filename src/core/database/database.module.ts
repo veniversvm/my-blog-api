@@ -4,10 +4,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config'; // 1. Import ConfigModule
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_CONFIG, AppConfigType } from '../config.loader';
-import { UserEntity } from 'src/users/entities/user.entity';
-import { ProfileEntity } from 'src/users/entities/profile.entity';
-import { PostEntity } from 'src/posts/entities/post.entity';
-import { CategoryEntity } from 'src/posts/entities/category.entity';
+// import { UserEntity } from 'src/users/entities/user.entity';
+// import { ProfileEntity } from 'src/users/entities/profile.entity';
+// import { PostEntity } from 'src/posts/entities/post.entity';
+// import { CategoryEntity } from 'src/posts/entities/category.entity';
 
 @Module({
   imports: [
@@ -22,11 +22,12 @@ import { CategoryEntity } from 'src/posts/entities/category.entity';
         }
         return {
           database: name,
-          entities: [UserEntity, ProfileEntity, PostEntity, CategoryEntity],
+          // entities: [UserEntity, ProfileEntity, PostEntity, CategoryEntity],
+          autoLoadEntities: true,
           host,
           password,
           port,
-          synchronize: true, // Be careful with this in production
+          synchronize: false, // Be careful with this in production
           type: 'postgres',
           username,
         };
