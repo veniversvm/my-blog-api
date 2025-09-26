@@ -9,6 +9,7 @@ import { DatabaseModule } from './core/database/database.module'; // Adjust path
 import { UsersModule } from './users/users.module';
 import { configOptions } from './core/config.options';
 import { PostsModule } from './posts/posts.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 // 1. Import your custom config options
 
@@ -16,6 +17,7 @@ import { PostsModule } from './posts/posts.module';
   imports: [
     // 2. Use your custom options here
     ConfigModule.forRoot(configOptions),
+    CacheModule.register({ isGlobal: true, ttl: 60 * 5 }),
     UsersModule,
     DatabaseModule,
     PostsModule,

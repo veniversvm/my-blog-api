@@ -1,0 +1,84 @@
+👤 Modelo de Usuarios (/users)
+--------------------------
+--------------------------
+
+curl -X POST http://localhost:3030/users \
+-H "Content-Type: application/json" \
+-d '{
+  "username": "testuser1",
+  "email": "test.user1@example.com",
+  "password": "Password123!",
+  "profile": {
+    "name": "Test",
+    "lastName": "User",
+    "age": 28
+  }
+}'
+
+curl -X GET http://localhost:3030/users
+
+curl -X GET http://localhost:3030/users/1
+
+curl -X PUT http://localhost:3030/users/1 \
+-H "Content-Type: application/json" \
+-d '{
+  "username": "testuser1_updated",
+  "email": "updated.user1@example.com",
+  "profile": {
+    "lastName": "UserUpdated",
+    "age": 29
+  }
+}'
+
+curl -X DELETE http://localhost:3030/users/2
+
+--------------------------
+--------------------------
+📝 Modelo de Posts (/posts)
+
+
+curl -X GET http://localhost:3030/posts
+
+curl -X POST http://localhost:3030/posts \
+-H "Content-Type: application/json" \
+-d '{
+  "title": "2Mi Primer Post con NestJS",
+  "description": "Una breve descripción sobre cómo crear APIs con NestJS y TypeORM.",
+  "content": "Este es el contenido completo del post. Aquí podemos escribir un texto mucho más largo y detallado sobre el tema...",
+  "isDraft": false,
+  "coverImage": "https://nestjs.com/logo-red.svg",
+  "authorId": 1
+}'
+
+
+curl -X PATCH http://localhost:3030/posts/1 \
+-H "Content-Type: application/json" \
+-d '{
+  "title": "Mi Primer Post (Actualizado)",
+  "isDraft": true,
+  "authorId": 1
+}'
+
+curl -X DELETE http://localhost:3030/posts/1
+
+
+--------------------------
+--------------------------
+
+curl -X POST http://localhost:3030/categories \
+-H "Content-Type: application/json" \
+-d '{
+  "name": "TypeScript"
+}'
+
+curl -X GET http://localhost:3030/categories
+
+curl -X GET http://localhost:3030/categories/1
+
+curl -X PATCH http://localhost:3030/categories/1 \
+-H "Content-Type: application/json" \
+-d '{
+  "name": "Node.js Frameworks"
+}'
+
+curl -X DELETE http://localhost:3030/categories/1

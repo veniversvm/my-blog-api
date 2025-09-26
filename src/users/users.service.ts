@@ -1,9 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto } from './dtos/user.dto';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { ProfileEntity } from './entities/profile.entity';
+import { CreateUserDto, UpdateUserDto } from './dtos/user.dto';
+
+// --- ¡ESTOS DOS IMPORTS SON LA SOLUCIÓN! ---
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginationResult } from 'src/common/interfaces/pagination-result.interface';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +22,7 @@ export class UsersService {
     private userRepository: Repository<UserEntity>,
     @InjectRepository(ProfileEntity)
     private profileRepository: Repository<ProfileEntity>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   ///////////////
@@ -30,8 +37,29 @@ export class UsersService {
   //   USERS   //
   ///////////////
 
-  async getAllUsers(): Promise<UserEntity[]> {
-    return await this.userRepository.find();
+  async getAllUsers(paginationQuery: PaginationQueryDto): Promise<PaginationResult<UserEntity>> {
+    const { limit, page } = paginationQuery;
+    const skip = (page - 1) * limit;
+
+    const [users, totalItems] = await this.userRepository.findAndCount({
+      take: limit,
+      skip: skip,
+      // Es una buena práctica cargar las relaciones necesarias, como el perfil.
+      relations: ['profile'],
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+
+    const totalPages = Math.ceil(totalItems / limit);
+    const meta = {
+      totalItems,
+      itemsPerPage: limit,
+      totalPages,
+      currentPage: page,
+    };
+
+    return { data: users, meta };
   }
 
   ///////////////
@@ -95,13 +123,14 @@ export class UsersService {
   ///////////////
   ///////////////
 
-  async deleteUser(id: number): Promise<DeleteResult> {
-    const user = await this.findUserById(id);
-    if (!user) {
+  async deleteUser(id: number): Promise<void> {
+    // Cambiamos el retorno a void por convención
+    const result: DeleteResult = await this.userRepository.delete(id);
+
+    // Si no se afectó ninguna fila, significa que el usuario no existía.
+    if (result.affected === 0) {
       throw new NotFoundException(`Usuario con ID '${id}' no encontrado.`);
     }
-    const result = await this.userRepository.delete(user);
-    return result;
   }
 
   ///////////////
@@ -125,5 +154,37 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  ///////////////
+  ///////////////
+
+  async getUserFullName(id: number): Promise<string> {
+    const cacheKey = `user_fullname_${id}`;
+
+    // 1. Intentar obtener el nombre del caché
+    const cachedName = await this.cacheManager.get<string>(cacheKey);
+    if (cachedName) {
+      console.log(`Getting user ${id} name from CACHE`);
+      return cachedName;
+    }
+
+    // 2. Si no está en caché, buscar en la base de datos
+    console.log(`Getting user ${id} name from DATABASE`);
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['profile'],
+    });
+
+    if (!user || !user.profile) {
+      throw new NotFoundException(`Usuario o perfil con ID '${id}' no encontrado.`);
+    }
+
+    const fullName = `${user.profile.name} ${user.profile.lastName}`;
+
+    // 3. Guardar el resultado en el caché para futuras peticiones
+    await this.cacheManager.set(cacheKey, fullName);
+
+    return fullName;
   }
 }

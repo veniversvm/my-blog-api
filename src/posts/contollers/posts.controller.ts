@@ -1,10 +1,13 @@
 // src/posts/contollers/posts.controller.ts
 
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { PostsService } from '../services/posts.service';
 import { CreatePostDto } from '../dto/create-post.dto';
 import { UpdatePostDto } from '../dto/update-post.dto';
 import { PostEntity } from '../entities/post.entity';
+import { PaginationResult } from 'src/common/interfaces/pagination-result.interface';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PostListItemDto } from '../dto/post-list-item.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -17,9 +20,11 @@ export class PostsController {
   }
 
   @Get()
-  findAll(): Promise<PostEntity[]> {
-    // CORRECCIÓN: Llamar a 'findAll' en lugar de 'findAllPosts'
-    return this.postsService.findAll();
+  findAll(
+    @Query() paginationQuery: PaginationQueryDto, // <-- Inyectar el DTO de paginación
+  ): Promise<PaginationResult<PostListItemDto>> {
+    // <-- Actualizar el tipo de retorno
+    return this.postsService.findAll(paginationQuery);
   }
 
   @Get('/:id')
