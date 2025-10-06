@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { Env } from 'src/core/env.model';
+import { Payload } from '../model/user-payload.model';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -17,7 +18,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       secretOrKey: secret,
     });
   }
-  validate(payload: { sub: string }): { userId: string } {
-    return { userId: payload.sub };
+  validate(payload: Payload): Payload {
+    console.log(payload);
+    return payload;
   }
 }

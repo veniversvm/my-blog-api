@@ -38,14 +38,15 @@ export class PostsService {
   /**
    * Crea un nuevo post. Requiere el ID del autor.
    */
-  async create(createPostDto: CreatePostDto): Promise<PostEntity> {
+  async create(createPostDto: CreatePostDto, userId: number): Promise<PostEntity> {
+    if (!userId || userId <= 0) throw new BadRequestException('Id Invalido');
     // 1. Desestructuramos el DTO para separar los IDs de categorías del resto de los datos.
-    const { categories: categoryIds, authorId, ...postData } = createPostDto;
+    const { categories: categoryIds, ...postData } = createPostDto;
 
     // 2. Buscamos al autor (esta lógica es insegura, pero la mantenemos por consistencia).
-    const author = await this.userRepository.findOneBy({ id: authorId });
+    const author = await this.userRepository.findOneBy({ id: userId });
     if (!author) {
-      throw new NotFoundException(`Usuario autor con ID '${authorId}' no encontrado.`);
+      throw new NotFoundException(`Usuario autor con ID '${userId}' no encontrado.`);
     }
 
     // 3. Buscamos las entidades de las categorías correspondientes a los IDs.

@@ -17,7 +17,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
    * del body de la petición (ej. 'username' y 'password').
    */
   async validate(username: string, password: string): Promise<UserPayload> {
-    console.log(`Validating user: ${username}`); // Útil para depuración
+    // console.log(`Validating user: ${username}`); // Útil para depuración
 
     // Llamamos a nuestro método 'validateUser' del AuthService
     const user = await this.authService.validateUser(username, password);

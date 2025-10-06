@@ -4,6 +4,7 @@
 ### POST
 curl -X POST http://localhost:3030/users \
 -H "Content-Type: application/json" \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTc1OTc2OTM3MywiZXhwIjoxNzU5NzY5NDMzfQ.h9cdN8xNsee2C54mZ9did96mBDdbC40F5dAqq83gFMw" \
 -d '{
   "username": "testuser3",
   "email": "test.user3@example.com",
@@ -125,12 +126,12 @@ curl -X GET http://localhost:3030/posts
 # POST /posts
 curl -X POST http://localhost:3030/posts \
 -H "Content-Type: application/json" \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTc1OTc2OTkxNywiZXhwIjoxNzU5NzczNTE3fQ.IG2AHVt458S_5pvlk75EE8QLHlMWi857NWV-RjbZ_ac" \
 -d '{
-  "title": "Introducción a TypeORM",
-  "description": "Cómo usar TypeORM con NestJS para gestionar tu base de datos.",
-  "content": "Contenido detallado del post...",
+  "title": "Introducción a TypeORM2",
+  "description": "Cómo usar TypeORM2con NestJS para gestionar tu base de datos.",
+  "content": "Contenido detallado del post2...",
   "isDraft": false,
-  "authorId": 1,
   "categories": [1, 2]
 }'
 

@@ -1,6 +1,6 @@
 // src/posts/dto/create-post.dto.ts
 
-import { IsArray, IsBoolean, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
+import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
 
 export class CreatePostDto {
   // ... (title, description, content, isDraft, coverImage sin cambios) ...
@@ -29,9 +29,10 @@ export class CreatePostDto {
   readonly coverImage?: string;
 
   // --- CAMPO AÑADIDO ---
-  @IsInt({ message: 'El ID del autor debe ser un número entero.' })
-  @IsNotEmpty({ message: 'El ID del autor no puede estar vacío.' })
-  readonly authorId: number;
+  // Ya no es necesario, esta en el token del usuario
+  // @IsInt({ message: 'El ID del autor debe ser un número entero.' })
+  // @IsNotEmpty({ message: 'El ID del autor no puede estar vacío.' })
+  // readonly authorId: number;
 
   @IsArray({ message: 'El campo debe ser un Array de numeros' })
   @IsNumber({}, { each: true })
