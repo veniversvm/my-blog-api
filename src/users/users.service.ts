@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { DeleteResult, Repository } from 'typeorm';
@@ -76,8 +76,22 @@ export class UsersService {
   ///////////////
   ///////////////
 
+  async findUserByNameOrEmail(field: string, name: string): Promise<UserEntity> {
+    // Se usan corchetes [field] para crear una clave dinámica en el objeto
+    const user = await this.userRepository.findOneBy({ [field]: name });
+    if (!user) {
+      // Corregido el mensaje de error para que sea más relevante
+      throw new UnauthorizedException('Unauthorized');
+    }
+    return user;
+  }
+
+  ///////////////
+  ///////////////
+
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-    const newUser = await this.userRepository.save(createUserDto);
+    const newUserModel = this.userRepository.create(createUserDto);
+    const newUser = await this.userRepository.save(newUserModel);
     // await this.profileRepository.save(createUserDto.profile);
     return newUser;
   }
